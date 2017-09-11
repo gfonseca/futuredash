@@ -1,0 +1,22 @@
+#!/usr/bin/env python2
+
+import time
+from futuredash.dzen import Dzen2, Vol, Date, Battery, Wifi, Network, I3Workspaces
+
+if __name__ == "__main__":
+    dzen = Dzen2({"bg": "#251925", "fg": "#b4ff00", "alignment": "l"})
+
+    while True:
+        dzen\
+        .clear()\
+        .set_widget(Wifi())\
+        .bar()\
+        .set_widget(Network())\
+        .bar()\
+        .set_widget(Vol())\
+        .bar()\
+        .set_widget(Date())\
+        .position("+500")\
+        .set_widget(I3Workspaces())\
+        .send()
+        time.sleep(0.01)
