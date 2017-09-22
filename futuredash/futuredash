@@ -4,19 +4,21 @@ import time
 from futuredash.dzen import Dzen2, Vol, Date, Battery, Wifi, Network, I3Workspaces
 
 if __name__ == "__main__":
-    dzen = Dzen2({"bg": "#251925", "fg": "#b4ff00", "alignment": "l"})
+    dzen = Dzen2({"bg": "#191F27", "fg": "#ECF1F3", "alignment": "l"})
 
     while True:
         dzen\
         .clear()\
         .set_widget(Wifi())\
-        .bar()\
+        .text("  ")\
         .set_widget(Network())\
-        .bar()\
+        .text("  ")\
         .set_widget(Vol())\
-        .bar()\
+        .text("  ")\
         .set_widget(Date())\
-        .position("+500")\
+        .text("  ")\
+        .position("+400")\
+        .text("  ")\
         .set_widget(I3Workspaces())\
         .send()
         time.sleep(0.01)

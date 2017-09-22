@@ -19,8 +19,9 @@ class Widget(object):
 class Date(Widget):
     def render(self, dzen):
         today = datetime.datetime.now()
-        t = today.strftime("%a, %d/%m/%Y %H:%M")
-        dzen.text(t)
+        t = today.strftime("%a, %d/%b %H:%M")
+        dzen.icon(ICONS_DIR+"clock.xbm")
+        dzen.text(" "+t)
 
 class Vol(Widget):
     def get_range(self):
@@ -90,23 +91,25 @@ class I3Workspaces(Widget):
         return json_works
 
     def render(self, dzen):
-        selected =  "#4f447e"
-        unselected = "#251925"
+        visible =  ICONS_DIR+"circle.xbm"
+        focused =  ICONS_DIR+"circle_dot.xbm"
+        none = ICONS_DIR+"dot.xbm"
+
         out = []
-        com = "^p(+5)^ca(1, i3-msg workspace {num})^bg({bg})^fg(#b4ff00) {name} ^ca()^bg({unselected})"
+        com = "^p(+5)^ca(1, i3-msg workspace {num}) ^fg(#D8043F) ^i({icon}) ^ca()"
         work_spaces = self.get_workspaces()
         for i in sorted(work_spaces, key=lambda k: k["num"]):
-            i['bg'] = selected if i["focused"] else unselected
-            i['unselected'] = unselected
+            icon = none
+
+            if i["visible"] and i["focused"]:
+                icon = focused
+
+            if not i["focused"] and i["visible"] :
+                icon = visible
+            i["icon"] = icon
+
             out.append(com.format(**i))
-
         dzen.text(" ".join(out))
-
-
-    def get_ip(self, iface):
-        ifcon = os.popen("ifconfig %s" % iface,).read()
-        m = re.compile('inet\s([0-9\.]*)').search(ifcon)
-        return m.group(1)
 
 class Network(Widget):
     def get_default(self):
@@ -117,7 +120,7 @@ class Network(Widget):
         defaults = self.get_default().strip("\n")
         ip = self.get_ip(defaults)
         dzen.icon(ICONS_DIR+"cable.xbm")
-        dzen.text(" %s: %s" % (defaults, ip))
+        dzen.text(" %s" % (ip,))
 
     def get_ip(self, iface):
         ifcon = os.popen("ifconfig %s" % iface,).read()
@@ -173,11 +176,12 @@ class Dzen2(object):
     def __init__(self, dzen_params=None):
 
         self.dzen_params = {
-            "bg": "#000000",
-            "fg": "#ffffff",
+            "bg": "#191F27",
+            "fg": "#D8043F",
+            "icon_color": "#D8043F",
             "alignment": "r",
-            "font": "-*-terminus-medium-r-*-*-9-*-*-*-*-*-iso10646-*",
-            "height": "12"
+            "font": "-*-Source\ Code\ Pro-medium-r-*-*-12-*-*-*-*-*-iso10646-*",
+            "height": "20"
         }
 
         if(dzen_params):
@@ -198,7 +202,7 @@ class Dzen2(object):
         return self
 
     def icon(self, path):
-        self.output += "^i(%s)" % (path,)
+        self.output += "^fg(%s)^i(%s)^fg()" % (self.dzen_params["icon_color"], path,)
         return self
 
     def text(self, text):
