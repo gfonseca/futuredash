@@ -17,8 +17,7 @@ if __name__ == "__main__":
         .text("  ")\
         .set_widget(Date())\
         .text("  ")\
-        .position("+400")\
+        .position("_CENTER")\
         .text("  ")\
         .set_widget(I3Workspaces())\
         .send()
-        time.sleep(0.01)

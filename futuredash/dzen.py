@@ -16,12 +16,38 @@ class Widget(object):
     def render(self, dzen):
         pass
 
+
+class Bar(Widget):
+    def __init__(self, size, percent, active="#ECF1F3", inactive="#ADADC7"):
+        self.size = size
+        self.percent = percent
+        self.active_color = active
+        self.inactive_color = inactive
+        self.active_bars = self.__calc_bar(size, percent)
+
+    def __calc_bar(self, size, percent):
+        return (size * percent) / 100
+
+    def make_bar(self):
+        bar = " ^fg({active})" 
+        bar += "^i({bar_path})" * self.active_bars
+        bar += "^fg({inactive})"
+        bar += "^i({bar_path})" * (self.size - self.active_bars)
+        return bar.format(active=self.active_color, inactive=self.inactive_color, bar_path=ICONS_DIR+"bar.xbm")
+   
+    def render(self, dzen):
+        bar = self.make_bar()
+        dzen.text(bar)
+
+
 class Date(Widget):
     def render(self, dzen):
         today = datetime.datetime.now()
         t = today.strftime("%a, %d/%b %H:%M")
         dzen.icon(ICONS_DIR+"clock.xbm")
         dzen.text(" "+t)
+
+
 
 class Vol(Widget):
     def get_range(self):
@@ -37,22 +63,25 @@ class Vol(Widget):
         icons = self.get_range()
         vol, mute = self.get_vol()
         vol_icon = icons[0][1]
+        vol_str = ""
         if mute != "off":
             for r,i in icons:
                 if vol <= r:
                     vol_icon = i
                     break
-            vol = " %d%%" %(vol,)
+            vol_str = " %d%%" %(vol,)
         else:
-            vol = "M"
+            vol_str = "M"
 
         dzen.icon(vol_icon)
-        dzen.text(str(vol))
+	b = Bar(10, int(vol))
+        b.render(dzen)
 
     def get_vol(self):
         amixer = os.popen("amixer sget Master").read()
-        m = re.compile('\[(\d+)\%]\s*\[(\w+)\]').search(amixer)
-        return int(m.group(1)), m.group(2)
+        vol = re.compile('\[(\d+)\%\]').search(amixer).group(1)
+	mute = re.compile('\[(on|off)\]').search(amixer).group(1)
+        return int(vol), mute
 
 class Battery(Widget):
     def get_range(self):
@@ -124,8 +153,8 @@ class Network(Widget):
 
     def get_ip(self, iface):
         ifcon = os.popen("ifconfig %s" % iface,).read()
-        m = re.compile('inet\s([0-9\.]*)').search(ifcon)
-        return m.group(1)
+        m = re.compile('inet\s(addr)?:([0-9\.]*)').search(ifcon)
+        return m.group(2)
 
 class Wifi(Widget):
     def get_range(self):
