@@ -5,8 +5,9 @@ from futuredash.dzen import Dzen2, Vol, Date, Battery, Wifi, Network, I3Workspac
 
 if __name__ == "__main__":
     dzen = Dzen2({"bg": "#191F27", "fg": "#ECF1F3", "alignment": "l"})
-
+    p = 350
     while True:
+        p -=1
         dzen\
         .clear()\
         .set_widget(Wifi())\
@@ -17,7 +18,7 @@ if __name__ == "__main__":
         .text("  ")\
         .set_widget(Date())\
         .text("  ")\
-        .position("_CENTER")\
+        .position("+350")\
         .text("  ")\
         .set_widget(I3Workspaces())\
         .send()
