@@ -11,7 +11,7 @@ if __name__ == "__main__":
         .clear()\
         .set_widget(Wifi())\
         .text("  ")\
-        .set_widget(Network())\
+        .set_widget(Battery())\
         .text("  ")\
         .set_widget(Vol())\
         .text("  ")\
