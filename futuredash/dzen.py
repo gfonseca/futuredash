@@ -29,12 +29,12 @@ class Bar(Widget):
         return (size * percent) / 100
 
     def make_bar(self):
-        bar = " ^fg({active})" 
+        bar = " ^fg({active})"
         bar += "^i({bar_path})" * self.active_bars
         bar += "^fg({inactive})"
         bar += "^i({bar_path})" * (self.size - self.active_bars)
         return bar.format(active=self.active_color, inactive=self.inactive_color, bar_path=ICONS_DIR+"bar.xbm")
-   
+
     def render(self, dzen):
         bar = self.make_bar()
         dzen.text(bar)
@@ -153,7 +153,7 @@ class Network(Widget):
 
     def get_ip(self, iface):
         ifcon = os.popen("ifconfig %s" % iface,).read()
-        m = re.compile('inet\s(addr)?:([0-9\.]*)').search(ifcon)
+        m = re.compile('inet\s(addr:)?([0-9\.]*)').search(ifcon)
         return m.group(2)
 
 class Wifi(Widget):
